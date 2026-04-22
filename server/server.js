@@ -2,21 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const app = express();
+const app = express(); // ✅ MUST be before app.use
 
 app.use(cors());
 app.use(express.json());
 
 // routes
 const clothesRoutes = require("./routes/clothesRoutes");
+const aiRoutes = require("./routes/aiRoutes");
+
 app.use("/api/clothes", clothesRoutes);
+app.use("/api/ai", aiRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Server is running 🚀");
-});
-
-// DB connect
-mongoose.connect("mongodb+srv://admin:test123@cluster0.e15vwz4.mongodb.net/dripcheck")
+// DB
+mongoose.connect("mongodb+srv://admin:hardi1404@cluster0.tf4h7re.mongodb.net/?appName=Cluster0")
   .then(() => console.log("DB connected"))
   .catch(err => console.log(err));
 
