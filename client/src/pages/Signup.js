@@ -1,151 +1,103 @@
-import React, { useState } from 'react';
+// client/src/pages/Signup.js
+import React, { useState } from "react";
+import axios from "axios";
 
-const Signup = ({ setAuthState, setUser }) => {
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    email: '', 
-    password: '',
-    gender: 'Male' // Default gender
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+export default function Signup({ setAuthState }) {
+  const [form, setForm] = useState({ name: "", email: "", password: "", gender: "Male" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError('');
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const setGender = (gender) => {
-    setFormData(prev => ({ ...prev, gender }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    setLoading(true);
 
-    if (!formData.name || !formData.email || !formData.password) {
-      setTimeout(() => {
-        setError('Please fill in all required fields.');
-        setIsLoading(false);
-      }, 500);
-      return;
+    try {
+      await axios.post("http://localhost:4000/api/auth/register", form);
+      setAuthState("login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Error creating account.");
+    } finally {
+      setLoading(false);
     }
-
-    // Mock API registration: POST /api/auth/register
-    setTimeout(() => {
-      console.log('Registered User Payload:', formData);
-      setUser({
-        name: formData.name,
-        email: formData.email,
-        gender: formData.gender
-      });
-      setIsLoading(false);
-      setAuthState('app');
-    }, 1200);
   };
 
   return (
-    <div className="auth-page animate-fade">
-      <div className="auth-left">
-        <img 
-          src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80" 
-          alt="Minimalist Fashion" 
-          className="auth-image" 
-        />
-        <div className="auth-left-overlay">
-          <h1 className="auth-title">DripCheck</h1>
-          <p className="auth-subtitle">Join the minimal aesthetic movement.</p>
+    <div className="auth-wrapper animate-fade">
+      <div className="ui-card auth-card">
+        <div className="auth-header">
+          <div className="brand-logo">Drip<span>Check</span></div>
+          <h2>Join the Movement</h2>
+          <p>Curate your aesthetic today.</p>
         </div>
-      </div>
-      
-      <div className="auth-right">
-        <div className="auth-form-container">
-          <div className="auth-header">
-            <h2>Create Account</h2>
-            <p>Start managing your outfits today.</p>
+
+        {error && <div className="alert-error">{error}</div>}
+
+        <form onSubmit={handleSignup} className="auth-form">
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="name"
+              className="ui-input"
+              placeholder="Alex Doe"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
           </div>
 
-          {error && <div className="form-error">{error}</div>}
+          <div className="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              name="email"
+              className="ui-input"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="name">Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                className="form-control" 
-                placeholder="e.g. Alex Doe" 
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              className="ui-input"
+              placeholder="Create a password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                className="form-control" 
-                placeholder="you@example.com" 
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="form-group">
+            <label>Gender</label>
+            <select name="gender" className="ui-input pl-3" value={form.gender} onChange={handleChange}>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                className="form-control" 
-                placeholder="Create a password" 
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+          <button type="submit" className="ui-btn ui-btn-primary" disabled={loading}>
+            {loading ? "Creating..." : "Create Account"}
+          </button>
+        </form>
 
-            <div className="form-group">
-              <label className="form-label">Gender</label>
-              <div className="gender-toggle">
-                <button
-                  type="button"
-                  className={`gender-btn ${formData.gender === 'Male' ? 'active' : ''}`}
-                  onClick={() => setGender('Male')}
-                >
-                  Male
-                </button>
-                <button
-                  type="button"
-                  className={`gender-btn ${formData.gender === 'Female' ? 'active' : ''}`}
-                  onClick={() => setGender('Female')}
-                >
-                  Female
-                </button>
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ width: '100%', marginTop: '1rem', padding: '1rem' }}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating...' : 'Create Account'}
-            </button>
-          </form>
-
-          <a href="#!" className="auth-link" onClick={(e) => { e.preventDefault(); setAuthState('login'); }}>
-            Already have an account? <span>Login</span>
-          </a>
+        <div className="auth-footer">
+          <p>Already have an account?</p>
+          <button className="ui-btn-text" onClick={() => setAuthState('login')}>
+            Sign In here
+          </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default Signup;
+}

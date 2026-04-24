@@ -1,76 +1,62 @@
-import React from 'react';
+// client/src/pages/Home.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const Home = ({ setActiveTab }) => {
+export default function Home({ setActiveTab, user }) {
+  const [totalClothes, setTotalClothes] = useState(0);
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Guest';
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get("http://localhost:4000/api/clothes", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data) setTotalClothes(res.data.length);
+      } catch (err) {
+        console.error("Failed to load statistics", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
   return (
-    <div className="animate-fade">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1 className="hero-title">Upgrade Your Style</h1>
-          <p className="hero-subtitle">
-            AI-powered outfit suggestions straight from your wardrobe. Curate, organize, and elevate your daily aesthetic.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button 
-              className="btn btn-primary" 
-              onClick={() => setActiveTab('wardrobe')}
-              style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
-            >
-              Explore Wardrobe
-            </button>
-            <button 
-              className="btn btn-outline" 
-              onClick={() => setActiveTab('add')}
-              style={{ padding: '1rem 2rem', fontSize: '1.1rem', backgroundColor: 'var(--bg-card)' }}
-            >
-              + Add Item
-            </button>
-          </div>
+    <div className="page-wrapper animate-fade">
+      <div className="ui-card hero-section">
+        <h1>What's up, <br />{firstName} 👋</h1>
+        <p>Ready to curate your aesthetic?</p>
+        <div className="stats-box">
+          <span className="stats-number">{totalClothes}</span>
+          <span className="stats-label">Items in Vault</span>
         </div>
-      </section>
-
-      {/* Feature Cards Grid */}
-      <section>
-        <div className="feature-grid">
-          <div className="feature-card" onClick={() => setActiveTab('wardrobe')}>
-            <div className="feature-icon">👕</div>
-            <h3 className="feature-title">My Wardrobe</h3>
-            <p className="feature-desc">View and manage your entire clothing collection in one unified space.</p>
-          </div>
-
-          <div className="feature-card" onClick={() => setActiveTab('add')}>
-            <div className="feature-icon">➕</div>
-            <h3 className="feature-title">Add Clothes</h3>
-            <p className="feature-desc">Upload new items to continually refine and build your personal dynamic aesthetic.</p>
-          </div>
-
-          <div className="feature-card" onClick={() => setActiveTab('wardrobe')}>
-            <div className="feature-icon">✨</div>
-            <h3 className="feature-title">AI Suggestion</h3>
-            <p className="feature-desc">Get smart outfit block recommendations generated tailored exclusively for you.</p>
-          </div>
-
-          <div className="feature-card" onClick={() => setActiveTab('profile')}>
-            <div className="feature-icon">👤</div>
-            <h3 className="feature-title">Profile Account</h3>
-            <p className="feature-desc">Manage your account preferences, handle data, and customize your layout.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Action Button below grid if needed (Also placed in Hero for UX) */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-         <button 
-            className="btn btn-primary" 
-            onClick={() => setActiveTab('wardrobe')}
-            style={{ padding: '1rem 3rem', borderRadius: '30px' }}
-          >
-            ✨ Suggest Fit Now
-          </button>
       </div>
 
+      <div className="action-row">
+        <div className="ui-card action-card" onClick={() => setActiveTab('add')}>
+          <div className="action-icon circle-beige">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </div>
+          <h3>Add Fit</h3>
+          <p>Upload new clothes</p>
+        </div>
+
+        <div className="ui-card action-card" onClick={() => setActiveTab('wardrobe')}>
+          <div className="action-icon circle-brown">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </div>
+          <h3>Wardrobe</h3>
+          <p>View collection</p>
+        </div>
+      </div>
+
+      <div className="ui-card helper-banner" onClick={() => setActiveTab('wardrobe')}>
+        <div className="helper-text">
+          <h4>AI Suggestions</h4>
+          <p>Don't know what to wear? Let AI decide.</p>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="helper-icon"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
     </div>
   );
-};
-
-export default Home;
+}

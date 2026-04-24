@@ -1,40 +1,54 @@
-import React, { useState } from 'react';
-import './index.css';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Wardrobe from './pages/Wardrobe';
-import AddClothes from './pages/AddClothes';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+// client/src/App.js
+import React, { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
+import Wardrobe from "./pages/Wardrobe";
+import AddClothes from "./pages/AddClothes";
+import Profile from "./pages/Profile";
+import "./index.css";
 
-function App() {
-  // 'login', 'signup', or 'app'
-  const [authState, setAuthState] = useState('login'); 
-  const [activeTab, setActiveTab] = useState('home'); // 'home', 'wardrobe', 'add', 'profile'
-  const [user, setUser] = useState(null); // stores { name, email, gender }
+export default function App() {
+  const [authState, setAuthState] = useState("login");
+  const [activeTab, setActiveTab] = useState("home");
+  const [user, setUser] = useState(null);
 
-  if (authState === 'login') {
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+
+      if (savedUser && savedUser !== "undefined" && token) {
+        setUser(JSON.parse(savedUser));
+        setAuthState("app");
+      }
+    } catch (error) {
+      console.error("Failed to parse user from localStorage:", error);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  }, []);
+
+  if (authState === "login") {
     return <Login setAuthState={setAuthState} setUser={setUser} />;
   }
 
-  if (authState === 'signup') {
-    return <Signup setAuthState={setAuthState} setUser={setUser} />;
+  if (authState === "signup") {
+    return <Signup setAuthState={setAuthState} />;
   }
 
-  // Main App View
   return (
-    <div className="app-container animate-fade">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
+    <div className="app-container">
       <main className="main-content">
-        {activeTab === 'home' && <Home setActiveTab={setActiveTab} />}
-        {activeTab === 'wardrobe' && <Wardrobe />}
-        {activeTab === 'add' && <AddClothes setActiveTab={setActiveTab} />}
-        {activeTab === 'profile' && <Profile user={user} setAuthState={setAuthState} setUser={setUser} />}
+        <div className="content-wrapper">
+          {activeTab === "home" && <Home setActiveTab={setActiveTab} user={user} />}
+          {activeTab === "wardrobe" && <Wardrobe />}
+          {activeTab === "add" && <AddClothes setActiveTab={setActiveTab} />}
+          {activeTab === "profile" && <Profile user={user} setAuthState={setAuthState} setUser={setUser} />}
+        </div>
       </main>
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }
-
-export default App;
