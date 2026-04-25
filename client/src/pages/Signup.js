@@ -3,24 +3,38 @@ import React, { useState } from "react";
 import axios from "axios";
 
 export default function Signup({ setAuthState }) {
-  const [form, setForm] = useState({ name: "", email: "", password: "", gender: "Male" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    gender: "Male",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
+    setSuccess("");
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       await axios.post("http://localhost:4000/api/auth/register", form);
-      setAuthState("login");
+      setSuccess("Account created! Redirecting to login...");
+      setTimeout(() => setAuthState("login"), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || "Error creating account.");
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Error creating account. Try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -36,6 +50,7 @@ export default function Signup({ setAuthState }) {
         </div>
 
         {error && <div className="alert-error">{error}</div>}
+        {success && <div className="alert-success">{success}</div>}
 
         <form onSubmit={handleSignup} className="auth-form">
           <div className="form-group">
@@ -79,21 +94,33 @@ export default function Signup({ setAuthState }) {
 
           <div className="form-group">
             <label>Gender</label>
-            <select name="gender" className="ui-input pl-3" value={form.gender} onChange={handleChange}>
+            <select
+              name="gender"
+              className="ui-input pl-3"
+              value={form.gender}
+              onChange={handleChange}
+            >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
           </div>
 
-          <button type="submit" className="ui-btn ui-btn-primary" disabled={loading}>
+          <button
+            type="submit"
+            className="ui-btn ui-btn-primary"
+            disabled={loading}
+          >
             {loading ? "Creating..." : "Create Account"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>Already have an account?</p>
-          <button className="ui-btn-text" onClick={() => setAuthState('login')}>
+          <button
+            className="ui-btn-text"
+            onClick={() => setAuthState("login")}
+          >
             Sign In here
           </button>
         </div>

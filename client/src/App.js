@@ -14,41 +14,80 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [user, setUser] = useState(null);
 
+  // Restore session on mount
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem("user");
       const token = localStorage.getItem("token");
 
-      if (savedUser && savedUser !== "undefined" && token) {
-        setUser(JSON.parse(savedUser));
-        setAuthState("app");
+      if (
+        savedUser &&
+        savedUser !== "undefined" &&
+        savedUser !== "null" &&
+        token &&
+        token !== "undefined"
+      ) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && parsed._id) {
+          setUser(parsed);
+          setAuthState("app");
+        }
       }
     } catch (error) {
-      console.error("Failed to parse user from localStorage:", error);
+      console.error("Session restore failed:", error);
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     }
   }, []);
 
+  const handleSetAuthState = (state) => {
+    if (state === "app") setActiveTab("home");
+    setAuthState(state);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setActiveTab("home");
+    setAuthState("login");
+  };
+
   if (authState === "login") {
-    return <Login setAuthState={setAuthState} setUser={setUser} />;
+    return <Login setAuthState={handleSetAuthState} setUser={setUser} />;
   }
 
   if (authState === "signup") {
-    return <Signup setAuthState={setAuthState} />;
+    return <Signup setAuthState={handleSetAuthState} />;
   }
 
   return (
     <div className="app-container">
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        user={user}
+        onLogout={handleLogout}
+      />
+
       <main className="main-content">
         <div className="content-wrapper">
-          {activeTab === "home" && <Home setActiveTab={setActiveTab} user={user} />}
+          {activeTab === "home" && (
+            <Home setActiveTab={setActiveTab} user={user} />
+          )}
           {activeTab === "wardrobe" && <Wardrobe />}
-          {activeTab === "add" && <AddClothes setActiveTab={setActiveTab} />}
-          {activeTab === "profile" && <Profile user={user} setAuthState={setAuthState} setUser={setUser} />}
+          {activeTab === "add" && (
+            <AddClothes setActiveTab={setActiveTab} />
+          )}
+          {activeTab === "profile" && (
+            <Profile
+              user={user}
+              setAuthState={handleSetAuthState}
+              setUser={setUser}
+            />
+          )}
         </div>
       </main>
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
   );
 }

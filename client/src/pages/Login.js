@@ -15,19 +15,31 @@ export default function Login({ setAuthState, setUser }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const res = await axios.post("http://localhost:4000/api/auth/login", form);
-      if (res.data && res.data.user && res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        setUser(res.data.user);
-        setAuthState("app");
-      } else {
-        setError("Invalid response from server.");
+
+      const { user, token } = res.data;
+
+      if (!user || !token) {
+        setError("Invalid response from server. Please try again.");
+        return;
       }
+
+      // Persist session
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Update app state → triggers redirect to Home
+      setUser(user);
+      setAuthState("app");
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid credentials or login failed.");
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Login failed. Check your credentials.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -71,14 +83,21 @@ export default function Login({ setAuthState, setUser }) {
             />
           </div>
 
-          <button type="submit" className="ui-btn ui-btn-primary" disabled={loading}>
+          <button
+            type="submit"
+            className="ui-btn ui-btn-primary"
+            disabled={loading}
+          >
             {loading ? "Verifying..." : "Sign In"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>New to DripCheck?</p>
-          <button className="ui-btn-text" onClick={() => setAuthState('signup')}>
+          <button
+            className="ui-btn-text"
+            onClick={() => setAuthState("signup")}
+          >
             Create an account
           </button>
         </div>

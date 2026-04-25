@@ -20,7 +20,15 @@ export default function AddClothes({ setActiveTab }) {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post("http://localhost:4000/api/clothes", form, {
+      const userStr = localStorage.getItem('user');
+      const loggedInUser = userStr ? JSON.parse(userStr) : null;
+
+      const payload = { ...form };
+      if (loggedInUser && loggedInUser._id) {
+        payload.userId = loggedInUser._id;
+      }
+
+      await axios.post("http://localhost:4000/api/clothes", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage("Item effectively added to vault.");

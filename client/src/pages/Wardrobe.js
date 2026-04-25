@@ -16,7 +16,15 @@ export default function Wardrobe() {
   const fetchClothes = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get("http://localhost:4000/api/clothes", {
+      const userStr = localStorage.getItem('user');
+      const loggedInUser = userStr ? JSON.parse(userStr) : null;
+
+      let url = "http://localhost:4000/api/clothes";
+      if (loggedInUser && loggedInUser._id) {
+        url += `?userId=${loggedInUser._id}`;
+      }
+
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClothes(Array.isArray(res.data) ? res.data : []);
