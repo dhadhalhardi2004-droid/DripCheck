@@ -1105,7 +1105,7 @@
     width: 160px;
   }
 
-  /* Chat FAB placement */
+
   .chat-fab {
     bottom: calc(90px + 1.5rem);
     right: 1.5rem;
