@@ -54,18 +54,26 @@ const IconRefresh = () => (
 /* ── Type emoji map ────────────────────────────── */
 const TYPE_EMOJI = { Top: '👕', Bottom: '👖', Shoes: '👟', Accessory: '💍' };
 
-/* ── Weather mock — rotates for variety ──────── */
-const WEATHERS = ['hot', 'cold', 'rainy'];
-const getMockWeather = () => WEATHERS[new Date().getDate() % WEATHERS.length];
-
 /* ── Time context ─────────────────────────────── */
 const getTimeOfDay = () => (new Date().getHours() < 18 ? 'day' : 'night');
+
+/* ── Weather helper for Open-Meteo WMO codes ──── */
+const getDerivedWeather = (temp, code) => {
+  // Rain/snow/thunderstorm codes
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 99)) return 'rainy';
+  if (temp < 20) return 'cold';
+  return 'hot';
+};
+
 
 /* ═══════════════════════════════════════════════ */
 
 export default function Home({ setActiveTab, user }) {
   const [clothes, setClothes]       = useState([]);
   const [clothesLoading, setClothesLoading] = useState(true);
+
+  // Weather state
+  const [liveWeather, setLiveWeather] = useState({ temp: null, code: null, derived: 'hot', loaded: false, location: '' });
 
   // AI suggestion state
   const [outfit, setOutfit]         = useState([]);
@@ -111,8 +119,8 @@ export default function Home({ setActiveTab, user }) {
     fetch();
   }, []);
 
-  /* ── Auto-fetch AI outfit on load ── */
-  const fetchOutfit = useCallback(async () => {
+  /* ── Auto-fetch AI outfit ── */
+  const fetchOutfit = useCallback(async (weatherStr, extraLabel) => {
     setAiLoading(true);
     setAiError('');
     try {
@@ -120,7 +128,7 @@ export default function Home({ setActiveTab, user }) {
       const u       = getLoggedInUser();
       const gender  = (u?.gender || 'unisex').toLowerCase();
       const time    = getTimeOfDay();
-      const weather = getMockWeather();
+      const weather = weatherStr || 'hot';
       const userId  = u?._id || '';
 
       const params = new URLSearchParams({ gender, time, weather });
@@ -134,7 +142,14 @@ export default function Home({ setActiveTab, user }) {
       const data = res.data;
       if (Array.isArray(data.outfit) && data.outfit.length > 0) {
         setOutfit(data.outfit);
-        setContextLabel(data.contextLabel || '');
+        let label = data.contextLabel || '';
+        if (extraLabel) {
+          // Replace the default weather part of the label with our live weather text
+          // label format is usually "For male · ☀️ Daytime · 🌡️ Hot"
+          // We can just append the real temp to it
+          label += ` · ${extraLabel}`;
+        }
+        setContextLabel(label);
       } else {
         setOutfit([]);
         setAiError(data.message || 'No suggestions available.');
@@ -147,8 +162,50 @@ export default function Home({ setActiveTab, user }) {
     }
   }, []);
 
+  /* ── Fetch Live Weather on load ── */
   useEffect(() => {
-    fetchOutfit();
+    let mounted = true;
+    const loadWeatherAndOutfit = async (lat, lon, locName = '') => {
+      try {
+        const res = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const { temperature, weathercode } = res.data.current_weather;
+        const derived = getDerivedWeather(temperature, weathercode);
+        if (mounted) {
+          setLiveWeather({ temp: temperature, code: weathercode, derived, loaded: true, location: locName });
+          const extraLabel = `${temperature}°C ${locName ? `in ${locName}` : ''}`.trim();
+          fetchOutfit(derived, extraLabel);
+        }
+      } catch (err) {
+        console.error('Weather fetch error', err);
+        if (mounted) fetchOutfit('hot', '');
+      }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          // Attempt to get location name using a free reverse geocoding API (OpenStreetMap Nominatim)
+          try {
+            const geoRes = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`, {
+              headers: { 'Accept-Language': 'en' }
+            });
+            const city = geoRes.data.address.city || geoRes.data.address.town || geoRes.data.address.village || '';
+            loadWeatherAndOutfit(pos.coords.latitude, pos.coords.longitude, city);
+          } catch (e) {
+            loadWeatherAndOutfit(pos.coords.latitude, pos.coords.longitude, '');
+          }
+        },
+        () => {
+          // Fallback if blocked
+          loadWeatherAndOutfit(23.2156, 72.6369, 'Gandhinagar'); // Defaulting to Gandhinagar as per user prompt hint
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      loadWeatherAndOutfit(23.2156, 72.6369, 'Gandhinagar');
+    }
+
+    return () => { mounted = false; };
   }, [fetchOutfit]);
 
   /* ── Chatbot ── */
@@ -161,7 +218,7 @@ export default function Home({ setActiveTab, user }) {
     if (m.includes('wardrobe') || m.includes('vault'))
       return `You've got ${clothes.length} items in your vault. Keep building! 💪`;
     if (m.includes('weather'))
-      return `Today's weather context: ${getMockWeather()} · ${getTimeOfDay() === 'day' ? '☀️ Day' : '🌙 Night'}`;
+      return `Today's real-time weather context: ${liveWeather.temp !== null ? `${liveWeather.temp}°C` : liveWeather.derived} · ${getTimeOfDay() === 'day' ? '☀️ Day' : '🌙 Night'}`;
     return "Great question! Keep curating your style and I'll get smarter every day. 🤖";
   };
 
@@ -179,7 +236,7 @@ export default function Home({ setActiveTab, user }) {
   const quickActions = [
     { label: 'Wardrobe', desc: 'Browse fits', tab: 'wardrobe', icon: <IconWardrobe />, cls: 'qac-icon-dark' },
     { label: 'Add Outfit', desc: 'Drop new piece', tab: 'add', icon: <IconAdd />, cls: 'qac-icon-sand' },
-    { label: 'AI Suggest', desc: 'Refresh fit', tab: null, onClick: fetchOutfit, icon: <IconSparkle />, cls: 'qac-icon-warm' },
+    { label: 'AI Suggest', desc: 'Refresh fit', tab: null, onClick: () => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : ''), icon: <IconSparkle />, cls: 'qac-icon-warm' },
   ];
 
   /* ── Skeleton cards ── */
@@ -230,7 +287,7 @@ export default function Home({ setActiveTab, user }) {
             </div>
             <button
               className="home-section-link"
-              onClick={fetchOutfit}
+              onClick={() => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : '')}
               disabled={aiLoading}
               aria-label="Refresh outfit suggestion"
             >
@@ -273,7 +330,7 @@ export default function Home({ setActiveTab, user }) {
               {/* Re-generate CTA card */}
               <div
                 className="outfit-card outfit-cta-card"
-                onClick={fetchOutfit}
+                onClick={() => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : '')}
                 role="button"
                 tabIndex={0}
                 aria-label="Get new suggestion"
@@ -375,7 +432,7 @@ export default function Home({ setActiveTab, user }) {
               <div className="chat-bot-avatar">✨</div>
               <div>
                 <strong>Style AI</strong>
-                <span>Online · {getTimeOfDay() === 'day' ? '☀️' : '🌙'} {getMockWeather()}</span>
+                <span>Online · {getTimeOfDay() === 'day' ? '☀️' : '🌙'} {liveWeather.temp ? `${liveWeather.temp}°C` : ''}</span>
               </div>
             </div>
             <button className="chat-close" onClick={() => setChatOpen(false)}>✕</button>
