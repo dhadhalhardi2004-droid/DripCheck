@@ -39,7 +39,19 @@ export default function Wardrobe() {
     setAiLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get("http://localhost:4000/api/ai/suggest", {
+      const userStr = localStorage.getItem('user');
+      const loggedInUser = userStr ? JSON.parse(userStr) : null;
+      
+      const gender = (loggedInUser?.gender || 'unisex').toLowerCase();
+      const time = new Date().getHours() < 18 ? 'day' : 'night';
+      const weather = 'hot'; // fallback
+      
+      const params = new URLSearchParams({ gender, time, weather });
+      if (loggedInUser && loggedInUser._id) {
+        params.set('userId', loggedInUser._id);
+      }
+
+      const res = await axios.get(`http://localhost:4000/api/ai/suggest?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

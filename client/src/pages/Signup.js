@@ -8,10 +8,12 @@ export default function Signup({ setAuthState }) {
     email: "",
     password: "",
     gender: "Male",
+    otp: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,8 +21,32 @@ export default function Signup({ setAuthState }) {
     setSuccess("");
   };
 
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!form.email || !form.name || !form.password) {
+      setError("Please fill all fields before requesting OTP.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await axios.post("http://localhost:4000/api/auth/send-otp", { email: form.email });
+      setSuccess(res.data.message || "OTP sent to your email!");
+      setOtpSent(true);
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data?.error || "Error sending OTP. Try again.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!otpSent) return handleSendOtp(e);
+    
     setLoading(true);
     setError("");
     setSuccess("");
@@ -30,10 +56,7 @@ export default function Signup({ setAuthState }) {
       setSuccess("Account created! Redirecting to login...");
       setTimeout(() => setAuthState("login"), 1500);
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Error creating account. Try again.";
+      const msg = err.response?.data?.message || err.response?.data?.error || "Error creating account. Try again.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -62,6 +85,7 @@ export default function Signup({ setAuthState }) {
               placeholder="Alex Doe"
               value={form.name}
               onChange={handleChange}
+              disabled={otpSent}
               required
             />
           </div>
@@ -75,6 +99,7 @@ export default function Signup({ setAuthState }) {
               placeholder="you@example.com"
               value={form.email}
               onChange={handleChange}
+              disabled={otpSent}
               required
             />
           </div>
@@ -88,6 +113,7 @@ export default function Signup({ setAuthState }) {
               placeholder="Create a password"
               value={form.password}
               onChange={handleChange}
+              disabled={otpSent}
               required
             />
           </div>
@@ -99,6 +125,7 @@ export default function Signup({ setAuthState }) {
               className="ui-input pl-3"
               value={form.gender}
               onChange={handleChange}
+              disabled={otpSent}
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -106,12 +133,27 @@ export default function Signup({ setAuthState }) {
             </select>
           </div>
 
+          {otpSent && (
+            <div className="form-group animate-fade">
+              <label>Verification Code (OTP)</label>
+              <input
+                type="text"
+                name="otp"
+                className="ui-input"
+                placeholder="Enter 6-digit code"
+                value={form.otp}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className="ui-btn ui-btn-primary"
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Account"}
+            {loading ? "Processing..." : (otpSent ? "Verify & Create Account" : "Send OTP")}
           </button>
         </form>
 

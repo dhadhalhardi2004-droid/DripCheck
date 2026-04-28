@@ -93,7 +93,7 @@ export default function AddClothes({ setActiveTab }) {
           </div>
 
           <div className="form-group">
-            <label>Image URL</label>
+            <label>Image URL (Optional)</label>
             <input
               type="url"
               name="imageUrl"
@@ -101,7 +101,6 @@ export default function AddClothes({ setActiveTab }) {
               placeholder="https://images.unsplash.com/..."
               value={form.imageUrl}
               onChange={handleChange}
-              required
             />
           </div>
 
