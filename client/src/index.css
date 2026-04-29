@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --app-bg: #F9F7F3;
+  --app-bg: #F3EAE2;
   --card-bg: #FFFFFF;
   --text-main: #332C24;
   --text-muted: #8E8375;
@@ -69,7 +69,7 @@ body {
 }
 
 .content-wrapper {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -305,14 +305,14 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(243, 234, 226, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-light);
 }
 
 .topbar-inner {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -351,10 +351,14 @@ body {
 
 .topbar-brand-drip {
   color: var(--text-main);
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
 }
 
 .topbar-brand-check {
-  color: var(--primary);
+  color: #3A2E26;
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
 }
 
 .topbar-avatar-btn {
@@ -392,7 +396,7 @@ body {
 }
 
 .nav-container {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   justify-content: space-around;

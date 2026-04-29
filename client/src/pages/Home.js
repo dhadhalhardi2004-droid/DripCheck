@@ -1,474 +1,174 @@
 // client/src/pages/Home.js
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import './Home.css';
 
 /* ── Icons ─────────────────────────────────────── */
-const IconWardrobe = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-    strokeLinecap="round" strokeLinejoin="round">
-    <rect width="7" height="7" x="3" y="3" rx="1" />
-    <rect width="7" height="7" x="14" y="3" rx="1" />
-    <rect width="7" height="7" x="14" y="14" rx="1" />
-    <rect width="7" height="7" x="3" y="14" rx="1" />
+const IconWeatherSun = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2"></path>
+    <path d="M12 20v2"></path>
+    <path d="M4.93 4.93l1.41 1.41"></path>
+    <path d="M17.66 17.66l1.41 1.41"></path>
+    <path d="M2 12h2"></path>
+    <path d="M20 12h2"></path>
+    <path d="M4.93 19.07l1.41-1.41"></path>
+    <path d="M17.66 6.34l1.41-1.41"></path>
   </svg>
 );
 
-const IconAdd = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-    strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
+const IconArrowRight = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+    <polyline points="12 5 19 12 12 19"></polyline>
   </svg>
 );
 
-const IconSparkle = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-    strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+const IconTShirt = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.38 3.46L16 2a8.5 8.5 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
   </svg>
 );
 
-const IconChevron = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-    strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6" />
+const IconHeart = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
   </svg>
 );
 
-const IconChat = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-    strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+const ChatBubble = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
   </svg>
 );
-
-const IconRefresh = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-    strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 4 23 10 17 10" />
-    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-  </svg>
-);
-
-/* ── Type emoji map ────────────────────────────── */
-const TYPE_EMOJI = { Top: '👕', Bottom: '👖', Shoes: '👟', Accessory: '💍' };
-
-/* ── Time context ─────────────────────────────── */
-const getTimeOfDay = () => (new Date().getHours() < 18 ? 'day' : 'night');
-
-/* ── Weather helper for Open-Meteo WMO codes ──── */
-const getDerivedWeather = (temp, code) => {
-  // Rain/snow/thunderstorm codes
-  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 99)) return 'rainy';
-  if (temp < 20) return 'cold';
-  return 'hot';
-};
-
-
-/* ═══════════════════════════════════════════════ */
 
 export default function Home({ setActiveTab, user }) {
-  const [clothes, setClothes]       = useState([]);
-  const [clothesLoading, setClothesLoading] = useState(true);
+  // Adding small state for heart toggle simulation
+  const [liked, setLiked] = useState({});
 
-  // Weather state
-  const [liveWeather, setLiveWeather] = useState({ temp: null, code: null, derived: 'hot', loaded: false, location: '' });
+  const toggleLike = (id) => setLiked(prev => ({ ...prev, [id]: !prev[id] }));
 
-  // AI suggestion state
-  const [outfit, setOutfit]         = useState([]);
-  const [contextLabel, setContextLabel] = useState('');
-  const [aiLoading, setAiLoading]   = useState(true);
-  const [aiError, setAiError]       = useState('');
-
-  // Chatbot
-  const [chatOpen, setChatOpen]     = useState(false);
-  const [chatMsg, setChatMsg]       = useState('');
-  const [chatLog, setChatLog]       = useState([
-    { from: 'bot', text: "Hey! I'm your AI style assistant. Ask me anything about your wardrobe! 👗" },
-  ]);
-
-  const firstName = user?.name ? user.name.split(' ')[0] : 'there';
-
-  /* ── Helper: get logged-in user ── */
-  const getLoggedInUser = () => {
-    try {
-      const s = localStorage.getItem('user');
-      return s && s !== 'undefined' && s !== 'null' ? JSON.parse(s) : null;
-    } catch {
-      return null;
-    }
-  };
-
-  /* ── Fetch user's clothes (for stat count) ── */
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const u = getLoggedInUser();
-        let url = 'http://localhost:4000/api/clothes';
-        if (u?._id) url += `?userId=${u._id}`;
-        const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
-        if (Array.isArray(res.data)) setClothes(res.data);
-      } catch (e) {
-        console.error('Failed to load clothes', e);
-      } finally {
-        setClothesLoading(false);
-      }
-    };
-    fetch();
-  }, []);
-
-  /* ── Auto-fetch AI outfit ── */
-  const fetchOutfit = useCallback(async (weatherStr, extraLabel) => {
-    setAiLoading(true);
-    setAiError('');
-    try {
-      const token   = localStorage.getItem('token');
-      const u       = getLoggedInUser();
-      const gender  = (u?.gender || 'unisex').toLowerCase();
-      const time    = getTimeOfDay();
-      const weather = weatherStr || 'hot';
-      const userId  = u?._id || '';
-
-      const params = new URLSearchParams({ gender, time, weather });
-      if (userId) params.set('userId', userId);
-
-      const res = await axios.get(
-        `http://localhost:4000/api/ai/suggest?${params.toString()}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const data = res.data;
-      if (Array.isArray(data.outfit) && data.outfit.length > 0) {
-        setOutfit(data.outfit);
-        let label = data.contextLabel || '';
-        if (extraLabel) {
-          // Replace the default weather part of the label with our live weather text
-          // label format is usually "For male · ☀️ Daytime · 🌡️ Hot"
-          // We can just append the real temp to it
-          label += ` · ${extraLabel}`;
-        }
-        setContextLabel(label);
-      } else {
-        setOutfit([]);
-        setAiError(data.message || 'No suggestions available.');
-      }
-    } catch (err) {
-      console.error('AI suggest failed', err);
-      setAiError('Could not load suggestions. Try adding more clothes.');
-    } finally {
-      setAiLoading(false);
-    }
-  }, []);
-
-  /* ── Fetch Live Weather on load ── */
-  useEffect(() => {
-    let mounted = true;
-    const loadWeatherAndOutfit = async (lat, lon, locName = '') => {
-      try {
-        const res = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-        const { temperature, weathercode } = res.data.current_weather;
-        const derived = getDerivedWeather(temperature, weathercode);
-        if (mounted) {
-          setLiveWeather({ temp: temperature, code: weathercode, derived, loaded: true, location: locName });
-          const extraLabel = `${temperature}°C ${locName ? `in ${locName}` : ''}`.trim();
-          fetchOutfit(derived, extraLabel);
-        }
-      } catch (err) {
-        console.error('Weather fetch error', err);
-        if (mounted) fetchOutfit('hot', '');
-      }
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          // Attempt to get location name using a free reverse geocoding API (OpenStreetMap Nominatim)
-          try {
-            const geoRes = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`, {
-              headers: { 'Accept-Language': 'en' }
-            });
-            const city = geoRes.data.address.city || geoRes.data.address.town || geoRes.data.address.village || '';
-            loadWeatherAndOutfit(pos.coords.latitude, pos.coords.longitude, city);
-          } catch (e) {
-            loadWeatherAndOutfit(pos.coords.latitude, pos.coords.longitude, '');
-          }
-        },
-        () => {
-          // Fallback if blocked
-          loadWeatherAndOutfit(23.2156, 72.6369, 'Gandhinagar'); // Defaulting to Gandhinagar as per user prompt hint
-        },
-        { timeout: 5000 }
-      );
-    } else {
-      loadWeatherAndOutfit(23.2156, 72.6369, 'Gandhinagar');
-    }
-
-    return () => { mounted = false; };
-  }, [fetchOutfit]);
-
-  /* ── Chatbot ── */
-  const getBotReply = (msg) => {
-    const m = msg.toLowerCase();
-    if (m.includes('outfit') || m.includes('wear'))
-      return `Based on your ${clothes.length} items, scroll up to see your Today's Drip! 🔥`;
-    if (m.includes('add') || m.includes('new'))
-      return "Head to 'Add Clothes' to drop new pieces into your vault. ➕";
-    if (m.includes('wardrobe') || m.includes('vault'))
-      return `You've got ${clothes.length} items in your vault. Keep building! 💪`;
-    if (m.includes('weather'))
-      return `Today's real-time weather context: ${liveWeather.temp !== null ? `${liveWeather.temp}°C` : liveWeather.derived} · ${getTimeOfDay() === 'day' ? '☀️ Day' : '🌙 Night'}`;
-    return "Great question! Keep curating your style and I'll get smarter every day. 🤖";
-  };
-
-  const handleChatSend = () => {
-    if (!chatMsg.trim()) return;
-    setChatLog((prev) => [
-      ...prev,
-      { from: 'user', text: chatMsg },
-      { from: 'bot', text: getBotReply(chatMsg) },
-    ]);
-    setChatMsg('');
-  };
-
-  /* ── Quick actions ── */
-  const quickActions = [
-    { label: 'Wardrobe', desc: 'Browse fits', tab: 'wardrobe', icon: <IconWardrobe />, cls: 'qac-icon-dark' },
-    { label: 'Add Outfit', desc: 'Drop new piece', tab: 'add', icon: <IconAdd />, cls: 'qac-icon-sand' },
-    { label: 'AI Suggest', desc: 'Refresh fit', tab: null, onClick: () => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : ''), icon: <IconSparkle />, cls: 'qac-icon-warm' },
+  const summerOutfits = [
+    { id: 's1', img: '/images/summer_1.jpg', tag: 'Sun-kissed · 32°C · Sunny', name: 'Yellow Linen Chic' },
+    { id: 's2', img: '/images/summer_2.jpg', tag: 'Breezy · 28°C · Clear', name: 'Olive & White' },
+    { id: 's3', img: '/images/summer_3.jpg', tag: 'City Walk · 30°C · Sunny', name: 'Minimalist Crop' },
+    { id: 's4', img: '/images/summer_4.jpg', tag: 'Casual Day · 26°C · Cloudy', name: 'Classic Denim' },
+    { id: 's5', img: '/images/summer_5.jpg', tag: 'Summer Stroll · 29°C · Sunny', name: 'Denim Corset' },
   ];
 
-  /* ── Skeleton cards ── */
-  const SkeletonCard = () => (
-    <div className="outfit-card outfit-skeleton" aria-hidden="true" />
-  );
-
   return (
-    <div className="page-wrapper animate-fade">
-      <div className="home-stagger">
-
-        {/* ══ HERO ══════════════════════════════════════ */}
-        <div className="home-hero">
-          <div className="home-hero-badge">
-            <span className="badge-dot" />
-            DripCheck
-          </div>
-          <h1>
-            Hey, <span>{firstName}</span> 👋<br />
-            Style your world.
-          </h1>
-          <p className="home-hero-sub">Your personal AI wardrobe assistant</p>
-
-          <div className="hero-stats-row">
-            <div className="hero-stat-pill">
-              <span className="stat-n">{clothesLoading ? '—' : clothes.length}</span>
-              <span className="stat-l">Items</span>
-            </div>
-            <div className="hero-stat-pill">
-              <span className="stat-n">{aiLoading ? '—' : outfit.length}</span>
-              <span className="stat-l">Fit Built</span>
-            </div>
-            <div className="hero-stat-pill">
-              <span className="stat-n">AI</span>
-              <span className="stat-l">Powered</span>
-            </div>
-          </div>
+    <div className="home-new-container animate-fade">
+      {/* --- Intro Section --- */}
+      <div className="intro-section">
+        <div className="weather-pill">
+          <IconWeatherSun />
+          <span>32°C · Sunny in your city</span>
         </div>
+        
+        <h1 className="greeting-title">
+          Hey {user?.name || 'there'} <span className="wave-emoji" role="img" aria-label="wave">👋</span>
+        </h1>
+        <h2 className="greeting-subtitle">
+          Here's your drip for today.
+        </h2>
+        
+        <p className="intro-desc">
+          We pulled three fits from your wardrobe — tuned to today's weather and your usual vibe. Tap any look to break it down.
+        </p>
+        
+        <div className="action-buttons">
+          <button className="btn-dark" onClick={() => {
+             document.getElementById('looks-section').scrollIntoView({ behavior: 'smooth' });
+          }}>
+            See today's looks <IconArrowRight />
+          </button>
+          <button className="btn-light" onClick={() => setActiveTab('wardrobe')}>
+            <IconTShirt /> My wardrobe
+          </button>
+        </div>
+      </div>
 
-        {/* ══ TODAY'S DRIP — AUTO SUGGESTION ═══════════ */}
-        <div>
-          <div className="home-section-header">
-            <div className="todays-drip-title">
-              <p className="home-section-label">Today's Drip 🔥</p>
-              {contextLabel && (
-                <span className="drip-context-badge">{contextLabel}</span>
-              )}
-            </div>
-            <button
-              className="home-section-link"
-              onClick={() => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : '')}
-              disabled={aiLoading}
-              aria-label="Refresh outfit suggestion"
-            >
-              <span className={aiLoading ? 'spin-icon' : ''}><IconRefresh /></span>
-            </button>
-          </div>
-
-          {aiLoading ? (
-            /* Skeleton loading row */
-            <div className="outfit-scroll-row" aria-label="Loading suggestions">
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
-            </div>
-
-          ) : outfit.length > 0 ? (
-            /* Outfit cards */
-            <div className="outfit-scroll-row">
-              {outfit.map((item, idx) => (
-                <div
-                  key={item._id || idx}
-                  className="outfit-card animate-fade"
-                  style={{ animationDelay: `${idx * 0.07}s` }}
-                  onClick={() => setActiveTab('wardrobe')}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="outfit-card-img">
-                    {item.imageUrl
-                      ? <img src={item.imageUrl} alt={item.name} loading="lazy" />
-                      : <span className="outfit-emoji">{TYPE_EMOJI[item.type] || '👔'}</span>
-                    }
-                    <span className="outfit-card-badge">{item.type}</span>
-                  </div>
-                  <p className="outfit-card-name">{item.name}</p>
-                  <p className="outfit-card-color">{item.color}</p>
-                </div>
-              ))}
-
-              {/* Re-generate CTA card */}
-              <div
-                className="outfit-card outfit-cta-card"
-                onClick={() => fetchOutfit(liveWeather.derived, liveWeather.temp ? `${liveWeather.temp}°C ${liveWeather.location}`.trim() : '')}
-                role="button"
-                tabIndex={0}
-                aria-label="Get new suggestion"
-              >
-                <div className="outfit-cta-inner">
-                  <IconRefresh />
-                  <p>New Fit</p>
-                </div>
-              </div>
-            </div>
-
-          ) : (
-            /* Empty / error state */
-            <div className="drip-empty-state">
-              <span className="drip-empty-icon">😕</span>
-              <p className="drip-empty-title">No suggestions yet</p>
-              <p className="drip-empty-sub">
-                {aiError || 'Add a Top, Bottom & Shoes to your vault first.'}
-              </p>
-              <button className="drip-empty-cta" onClick={() => setActiveTab('add')}>
-                <IconAdd /> Add Clothes
+      {/* --- Large Outfit Cards Section --- */}
+      <div id="looks-section" className="large-cards-container">
+        
+        {summerOutfits.map((outfit) => (
+          <div key={outfit.id} className="large-outfit-card">
+            <img src={outfit.img} alt={outfit.name} className="card-bg-img" />
+            <div className="card-top-tags">
+              <div className="weather-tag-white">{outfit.tag}</div>
+              <button className={`heart-btn ${liked[outfit.id] ? 'liked' : ''}`} onClick={() => toggleLike(outfit.id)}>
+                <IconHeart />
               </button>
             </div>
-          )}
-        </div>
-
-        {/* ══ QUICK ACTIONS ════════════════════════════ */}
-        <div>
-          <p className="home-section-label">Quick Actions</p>
-          <div className="quick-actions-grid">
-            {quickActions.map((action) => (
-              <div
-                key={action.label}
-                className="quick-action-card"
-                onClick={action.onClick || (() => setActiveTab(action.tab))}
-                role="button"
-                tabIndex={0}
-              >
-                <div className={`qac-icon-wrap ${action.cls}`}>{action.icon}</div>
-                <h4>{action.label}</h4>
-                <p>{action.desc}</p>
-              </div>
-            ))}
           </div>
-        </div>
-
-        {/* ══ FEATURE LIST ═════════════════════════════ */}
-        <div>
-          <p className="home-section-label">Explore Features</p>
-          <div className="home-features-col">
-            {[
-              {
-                title: 'Smart Outfit Suggestions',
-                desc: 'AI picks the perfect combo based on time & weather.',
-                tab: 'wardrobe',
-                cls: 'fc-icon-brown',
-                icon: <IconSparkle />,
-              },
-              {
-                title: 'Organise Your Vault',
-                desc: 'Sort by type, color, or mood in seconds.',
-                tab: 'wardrobe',
-                cls: 'fc-icon-cream',
-                icon: <IconWardrobe />,
-              },
-              {
-                title: 'Drop New Drip',
-                desc: 'Know what you own. Wear it better.',
-                tab: 'add',
-                cls: 'fc-icon-warm',
-                icon: <IconAdd />,
-              },
-            ].map((feat) => (
-              <div
-                key={feat.title}
-                className="feature-card"
-                onClick={() => setActiveTab(feat.tab)}
-                role="button"
-                tabIndex={0}
-              >
-                <div className={`feature-card-icon ${feat.cls}`}>{feat.icon}</div>
-                <div className="feature-card-body">
-                  <h4>{feat.title}</h4>
-                  <p>{feat.desc}</p>
-                </div>
-                <div className="feature-card-arrow"><IconChevron /></div>
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
 
       </div>
 
-      {/* ══ FLOATING CHATBOT ════════════════════════ */}
-      {chatOpen && (
-        <div className="chat-window animate-fade">
-          <div className="chat-header">
-            <div className="chat-header-info">
-              <div className="chat-bot-avatar">✨</div>
-              <div>
-                <strong>Style AI</strong>
-                <span>Online · {getTimeOfDay() === 'day' ? '☀️' : '🌙'} {liveWeather.temp ? `${liveWeather.temp}°C` : ''}</span>
+      {/* --- Small Cards Grid --- */}
+      <div className="small-cards-grid">
+        <div className="small-outfit-card">
+          <h3 className="card-title-serif">Sunny Chic</h3>
+          <div className="clothing-list">
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_1.jpg" alt="Top" /></div>
+              <div className="item-details">
+                <span className="item-type">Top:</span> Yellow Button-down
               </div>
             </div>
-            <button className="chat-close" onClick={() => setChatOpen(false)}>✕</button>
-          </div>
-
-          <div className="chat-body" id="chat-body">
-            {chatLog.map((msg, i) => (
-              <div key={i} className={`chat-msg ${msg.from}`}>{msg.text}</div>
-            ))}
-          </div>
-
-          <div className="chat-input-row">
-            <input
-              className="chat-input"
-              placeholder="Ask about your style..."
-              value={chatMsg}
-              onChange={(e) => setChatMsg(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleChatSend()}
-            />
-            <button className="chat-send" onClick={handleChatSend} aria-label="Send">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </button>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_1.jpg" alt="Bottom" /></div>
+              <div className="item-details">
+                <span className="item-type">Bottom:</span> Khaki Mini Skirt
+              </div>
+            </div>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_1.jpg" alt="Accessory" /></div>
+              <div className="item-details">
+                <span className="item-type">Accessory:</span> Beige Cap
+              </div>
+            </div>
           </div>
         </div>
-      )}
 
-      <button
-        className={`chat-fab ${chatOpen ? 'chat-fab-open' : ''}`}
-        onClick={() => setChatOpen((v) => !v)}
-        aria-label="Toggle style assistant"
-      >
-        {chatOpen ? '✕' : <IconChat />}
+        <div className="small-outfit-card">
+          <h3 className="card-title-serif">Olive Breezes</h3>
+          <div className="clothing-list">
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Top" /></div>
+              <div className="item-details">
+                <span className="item-type">Top:</span> Olive Linen Shirt
+              </div>
+            </div>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Bottom" /></div>
+              <div className="item-details">
+                <span className="item-type">Bottom:</span> White Denim Shorts
+              </div>
+            </div>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Bag" /></div>
+              <div className="item-details">
+                <span className="item-type">Bag:</span> Suede Tote Bag
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Night Out Card --- */}
+      <div className="large-outfit-card night-card">
+        <img src="/images/night_outfit_1777462781829.png" alt="Night Outfit" className="card-bg-img" />
+        <div className="card-top-tags">
+          <div className="weather-tag-dark">Night out · 24°C · Clear</div>
+          <button className={`heart-btn ${liked['night'] ? 'liked' : ''}`} onClick={() => toggleLike('night')}>
+            <IconHeart />
+          </button>
+        </div>
+      </div>
+
+      <button className="chat-fab-new">
+         <ChatBubble />
       </button>
     </div>
   );

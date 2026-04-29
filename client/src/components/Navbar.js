@@ -56,7 +56,12 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
           {/* Center — title */}
           <span className="topbar-title">
             {isHome
-              ? <><span className="topbar-brand-drip">Drip</span><span className="topbar-brand-check">Check</span></>
+              ? <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4B3621" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px', verticalAlign: 'middle', fill: '#4B3621'}}>
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  <span className="topbar-brand-drip">Drip</span><span className="topbar-brand-check">Check</span>
+                </>
               : title}
           </span>
 
@@ -65,8 +70,9 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
             className="topbar-avatar-btn"
             onClick={() => setActiveTab('profile')}
             aria-label="Go to profile"
+            style={{ backgroundColor: '#EFE9E2', color: '#E2A93A' }}
           >
-            {initials}
+            ✨
           </button>
         </div>
       </header>
