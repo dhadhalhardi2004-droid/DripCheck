@@ -69,8 +69,8 @@ body {
 }
 
 .content-wrapper {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .page-wrapper {
@@ -312,8 +312,8 @@ body {
 }
 
 .topbar-inner {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -396,8 +396,8 @@ body {
 }
 
 .nav-container {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   display: flex;
   justify-content: space-around;
   align-items: center;

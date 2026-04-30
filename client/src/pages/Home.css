@@ -2,8 +2,8 @@
 
 .home-new-container {
   padding: 1rem 0 3rem 0;
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   font-family: 'Inter', sans-serif;
   color: #3A2E26;
 }
