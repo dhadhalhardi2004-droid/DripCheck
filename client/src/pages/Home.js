@@ -56,6 +56,14 @@ export default function Home({ setActiveTab, user }) {
     { id: 's5', img: '/images/summer_5.jpg', tag: 'Summer Stroll · 29°C · Sunny', name: 'Denim Corset' },
   ];
 
+  const winterOutfits = [
+    { id: 'w1', img: '/images/winter_1.jpg', tag: 'Cozy · 12°C · Chilly', name: 'Cream Knit Dress' },
+    { id: 'w2', img: '/images/winter_2.jpg', tag: 'Casual · 10°C · Overcast', name: 'Grey Cardigan' },
+    { id: 'w3', img: '/images/winter_3.jpg', tag: 'Minimal · 14°C · Windy', name: 'White Button Knit' },
+    { id: 'w4', img: '/images/winter_4.jpg', tag: 'Sleek · 8°C · Cold', name: 'Navy Layered Look' },
+    { id: 'w5', img: '/images/winter_5.jpg', tag: 'Chic · 11°C · Sunny', name: 'Mauve Crop Sweater' },
+  ];
+
   return (
     <div className="home-new-container animate-fade">
       {/* --- Intro Section --- */}
@@ -88,9 +96,11 @@ export default function Home({ setActiveTab, user }) {
         </div>
       </div>
 
-      {/* --- Large Outfit Cards Section --- */}
-      <div id="looks-section" className="large-cards-container">
-        
+      {/* --- Large Outfit Cards Section (Summer) --- */}
+      <div id="looks-section" className="section-header-row">
+        <h2 className="section-title-serif">Summer Collection</h2>
+      </div>
+      <div className="large-cards-container">
         {summerOutfits.map((outfit) => (
           <div key={outfit.id} className="large-outfit-card">
             <img src={outfit.img} alt={outfit.name} className="card-bg-img" />
@@ -102,7 +112,24 @@ export default function Home({ setActiveTab, user }) {
             </div>
           </div>
         ))}
+      </div>
 
+      {/* --- Large Outfit Cards Section (Winter) --- */}
+      <div className="section-header-row">
+        <h2 className="section-title-serif">Winter Aesthetics</h2>
+      </div>
+      <div className="large-cards-container">
+        {winterOutfits.map((outfit) => (
+          <div key={outfit.id} className="large-outfit-card">
+            <img src={outfit.img} alt={outfit.name} className="card-bg-img" />
+            <div className="card-top-tags">
+              <div className="weather-tag-white">{outfit.tag}</div>
+              <button className={`heart-btn ${liked[outfit.id] ? 'liked' : ''}`} onClick={() => toggleLike(outfit.id)}>
+                <IconHeart />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* --- Small Cards Grid --- */}
@@ -132,24 +159,48 @@ export default function Home({ setActiveTab, user }) {
         </div>
 
         <div className="small-outfit-card">
-          <h3 className="card-title-serif">Olive Breezes</h3>
+          <h3 className="card-title-serif">Winter Layers</h3>
           <div className="clothing-list">
             <div className="clothing-item">
-              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Top" /></div>
+              <div className="item-thumbnail"><img src="/images/winter_1.jpg" alt="Dress" /></div>
               <div className="item-details">
-                <span className="item-type">Top:</span> Olive Linen Shirt
+                <span className="item-type">Dress:</span> Ribbed Knit Mini
               </div>
             </div>
             <div className="clothing-item">
-              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Bottom" /></div>
+              <div className="item-thumbnail"><img src="/images/winter_1.jpg" alt="Leggings" /></div>
               <div className="item-details">
-                <span className="item-type">Bottom:</span> White Denim Shorts
+                <span className="item-type">Layer:</span> Sheer Black Tights
               </div>
             </div>
             <div className="clothing-item">
-              <div className="item-thumbnail"><img src="/images/summer_2.jpg" alt="Bag" /></div>
+              <div className="item-thumbnail"><img src="/images/winter_1.jpg" alt="Boots" /></div>
               <div className="item-details">
-                <span className="item-type">Bag:</span> Suede Tote Bag
+                <span className="item-type">Boots:</span> Knee-high Leather
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="small-outfit-card">
+          <h3 className="card-title-serif">Grey Cardigan</h3>
+          <div className="clothing-list">
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/winter_2.jpg" alt="Top" /></div>
+              <div className="item-details">
+                <span className="item-type">Top:</span> Oversized Grey Knit
+              </div>
+            </div>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/winter_2.jpg" alt="Bottom" /></div>
+              <div className="item-details">
+                <span className="item-type">Bottom:</span> Light Wash Denim
+              </div>
+            </div>
+            <div className="clothing-item">
+              <div className="item-thumbnail"><img src="/images/winter_2.jpg" alt="Bag" /></div>
+              <div className="item-details">
+                <span className="item-type">Bag:</span> Cream Top-handle
               </div>
             </div>
           </div>
