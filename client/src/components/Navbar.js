@@ -65,15 +65,30 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
               : title}
           </span>
 
-          {/* Right — avatar */}
-          <button
-            className="topbar-avatar-btn"
-            onClick={() => setActiveTab('profile')}
-            aria-label="Go to profile"
-            style={{ backgroundColor: '#EFE9E2', color: '#E2A93A' }}
-          >
-            ✨
-          </button>
+          {/* Right — search & avatar */}
+          <div className="flex items-center gap-2">
+            <button
+              className="topbar-icon-btn"
+              onClick={() => setActiveTab('wardrobe')}
+              aria-label="Search clothes"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+                strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+              </svg>
+            </button>
+
+            <button
+              className="topbar-avatar-btn"
+              onClick={() => setActiveTab('profile')}
+              aria-label="Go to profile"
+              style={{ backgroundColor: '#EFE9E2', color: '#E2A93A' }}
+            >
+              ✨
+            </button>
+          </div>
         </div>
       </header>
 

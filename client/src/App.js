@@ -14,8 +14,18 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home");
   const [user, setUser] = useState(null);
 
-  // Restore session on mount
+  // Restore session & Handle Scroll
   useEffect(() => {
+    const handleScroll = () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      const progressBar = document.getElementById("scroll-progress");
+      if (progressBar) progressBar.style.width = scrolled + "%";
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
     try {
       const savedUser = localStorage.getItem("user");
       const token = localStorage.getItem("token");
@@ -38,6 +48,8 @@ export default function App() {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     }
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleSetAuthState = (state) => {
@@ -63,6 +75,7 @@ export default function App() {
 
   return (
     <div className="app-container">
+      <div id="scroll-progress"></div>
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}

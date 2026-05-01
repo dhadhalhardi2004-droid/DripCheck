@@ -1,151 +1,75 @@
 // client/src/pages/Wardrobe.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useMemo } from 'react';
+import { clothesData } from '../data/clothes';
+import ClothingCard from '../components/ClothingCard';
+import SearchFilters from '../components/SearchFilters';
 
 export default function Wardrobe() {
-  const [clothes, setClothes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('All');
-  const [aiSuggestions, setAiSuggestions] = useState(null);
-  const [aiLoading, setAiLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
 
-  useEffect(() => {
-    fetchClothes();
-  }, []);
-
-  const fetchClothes = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const userStr = localStorage.getItem('user');
-      const loggedInUser = userStr ? JSON.parse(userStr) : null;
-
-      let url = "http://localhost:4000/api/clothes";
-      if (loggedInUser && loggedInUser._id) {
-        url += `?userId=${loggedInUser._id}`;
-      }
-
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setClothes(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSuggest = async () => {
-    setAiLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const userStr = localStorage.getItem('user');
-      const loggedInUser = userStr ? JSON.parse(userStr) : null;
-      
-      const gender = (loggedInUser?.gender || 'unisex').toLowerCase();
-      const time = new Date().getHours() < 18 ? 'day' : 'night';
-      const weather = 'hot'; // fallback
-      
-      const params = new URLSearchParams({ gender, time, weather });
-      if (loggedInUser && loggedInUser._id) {
-        params.set('userId', loggedInUser._id);
-      }
-
-      const res = await axios.get(`http://localhost:4000/api/ai/suggest?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      let suggestedArray = [];
-      if (res.data) {
-        if (Array.isArray(res.data)) suggestedArray = res.data;
-        else if (res.data.outfit) suggestedArray = res.data.outfit;
-        else suggestedArray = [res.data];
-      }
-      setAiSuggestions(suggestedArray);
-    } catch (err) {
-      console.error("Failed to fetch AI suggestions:", err);
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
-  const filters = ['All', 'Top', 'Bottom', 'Shoes', 'Accessory'];
-  const filteredClothes = filter === 'All'
-    ? clothes
-    : clothes.filter(item => item.type?.toLowerCase() === filter.toLowerCase());
+  // Filtering Logic
+  const filteredItems = useMemo(() => {
+    return clothesData.filter((item) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const matchesSearch = item.name.toLowerCase().includes(searchTermLower) || 
+                            item.category.toLowerCase().includes(searchTermLower);
+      const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, activeCategory]);
 
   return (
-    <div className="page-wrapper animate-fade">
-      <div className="ui-card ai-card">
-        <div className="ai-layout">
-          <div className="ai-text">
-            <h2>AI Outfit Finder</h2>
-            <p>Compute your perfect fit today.</p>
-          </div>
-          <button className="ui-btn ui-btn-primary ai-btn" onClick={handleSuggest} disabled={aiLoading}>
-            {aiLoading ? "Thinking..." : "Suggest"}
-          </button>
+    <div className="page-wrapper animate-fade max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+      
+      {/* --- HEADER SECTION --- */}
+      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div>
+          <span className="text-[#BCAE99] text-[11px] font-black tracking-[0.2em] uppercase mb-3 block">Your Closet</span>
+          <h1 className="text-[#2D241C] text-5xl md:text-7xl font-serif font-bold leading-tight mb-2">Wardrobe</h1>
+          <p className="text-[#8C7B6B] text-base md:text-lg font-medium">
+            {filteredItems.length} pieces · ready to be remixed into infinite fits.
+          </p>
         </div>
-
-        {aiSuggestions && aiSuggestions.length > 0 && (
-          <div className="ai-results animate-fade">
-            <h4>Suggested Fit:</h4>
-            <div className="grid-layout mt-1">
-              {aiSuggestions.map((item, idx) => item && (
-                <div key={idx} className="ui-card item-card">
-                  <div className="item-img-container">
-                    {item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <div className="img-placeholder">No Img</div>}
-                    <span className="item-badge">{item.type}</span>
-                  </div>
-                  <div className="item-info">
-                    <h5>{item.name}</h5>
-                    <p>{item.color}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <button className="bg-[#4B3621] text-white px-8 py-3.5 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm font-bold">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add piece
+        </button>
       </div>
 
-      <div className="section-title">
-        <h2>My Vault</h2>
-      </div>
+      {/* Search & Filters */}
+      <SearchFilters 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+      />
 
-      <div className="chips-container">
-        {filters.map(f => (
-          <button
-            key={f}
-            className={`chip ${filter === f ? 'active' : ''}`}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div className="placeholder-text">Loading styling vault...</div>
-      ) : filteredClothes.length > 0 ? (
-        <div className="grid-layout">
-          {filteredClothes.map(item => (
-            <div key={item._id || item.id} className="ui-card item-card animate-fade">
-              <div className="item-img-container">
-                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} /> : <div className="img-placeholder">No Img</div>}
-                <span className="item-badge">{item.type}</span>
-              </div>
-              <div className="item-info">
-                <h5>{item.name}</h5>
-                <p>{item.color}</p>
-              </div>
-            </div>
+      {/* Pinterest-style Masonry Grid */}
+      {filteredItems.length > 0 ? (
+        <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-6 space-y-6">
+          {filteredItems.map((item) => (
+            <ClothingCard key={item.id} item={item} />
           ))}
         </div>
       ) : (
-        <div className="empty-box ui-card">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="empty-icon"><line x1="22" y1="12" x2="2" y2="12"></line><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path><line x1="6" y1="16" x2="6.01" y2="16"></line><line x1="10" y1="16" x2="10.01" y2="16"></line></svg>
-          <h3>Nothing Found</h3>
-          <p>No items added for this category.</p>
+        <div className="flex flex-col items-center justify-center py-20 text-center animate-fade">
+          <div className="bg-white p-8 rounded-3xl shadow-soft mb-4">
+            <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" className="text-neutral-300">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-neutral-800">No drip found 😢</h3>
+          <p className="text-neutral-500 mt-2">Try adjusting your search or filters to find what you're looking for.</p>
+          <button 
+            onClick={() => { setSearchTerm(''); setActiveCategory('all'); }}
+            className="mt-6 text-sm font-bold text-neutral-800 hover:underline"
+          >
+            Clear all filters
+          </button>
         </div>
       )}
     </div>

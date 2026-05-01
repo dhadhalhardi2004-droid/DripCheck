@@ -24,50 +24,76 @@
 
 /* --- Intro Section --- */
 .intro-section {
-  padding: 1rem;
+  padding: 4rem 2rem;
   margin-bottom: 2rem;
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/noiseFilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 100px 100px;
+  background-repeat: repeat;
+  opacity: 0.98;
 }
 
 .weather-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background-color: #EFE9E2;
-  padding: 0.35rem 0.8rem;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem 1rem;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6C5A4B;
-  margin-bottom: 2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4B3621;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .greeting-title {
   font-family: 'Fraunces', serif;
-  font-size: 3.2rem;
-  font-weight: 700;
-  margin-bottom: 0.2rem;
+  font-size: 5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
   color: #2D241C;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
 }
 
 .wave-emoji {
-  font-size: 2.8rem;
+  font-size: 4rem;
+  display: inline-block;
+  animation: wave 2.5s infinite;
+  transform-origin: 70% 70%;
+}
+
+@keyframes wave {
+  0% { transform: rotate( 0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
 }
 
 .greeting-subtitle {
   font-family: 'Fraunces', serif;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   font-weight: 400;
   color: #8C7B6B;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  font-style: italic;
 }
 
 .intro-desc {
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 1.1rem;
+  line-height: 1.6;
   color: #6A5B4C;
-  max-width: 500px;
-  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-bottom: 3.5rem;
+  font-weight: 400;
 }
 
 .action-buttons {

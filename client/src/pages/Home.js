@@ -2,7 +2,11 @@
 import React, { useState } from 'react';
 import './Home.css';
 
+import PinterestExplore from '../components/PinterestExplore';
+import Footer from '../components/Footer';
+
 /* ── Icons ─────────────────────────────────────── */
+
 const IconWeatherSun = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="4"></circle>
@@ -218,9 +222,8 @@ export default function Home({ setActiveTab, user }) {
         </div>
       </div>
 
-      <button className="chat-fab-new">
-         <ChatBubble />
-      </button>
+      <PinterestExplore />
+      <Footer />
     </div>
   );
 }
