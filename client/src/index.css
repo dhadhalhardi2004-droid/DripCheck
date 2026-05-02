@@ -86,11 +86,68 @@ body {
 .delay-2 { animation-delay: 0.2s; }
 .delay-3 { animation-delay: 0.3s; }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--app-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #EAE2D5;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Global Grain Texture Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  filter: contrast(120%) brightness(100%);
+}
+
+/* Premium Card Hover Lift */
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Page Transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+/* Typography Refinement */
+h1, h2, .font-serif {
+  letter-spacing: -0.04em;
+  font-feature-settings: "ss01", "ss02", "cv01";
+}
+
 /* Utility Containers */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: var(--app-bg);
 }
 
 .main-content {
@@ -124,20 +181,95 @@ body {
   text-align: center;
 }
 
-.mt-1 {
-  margin-top: 1rem;
+/* Search & Filter System */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 672px;
+  margin-bottom: 2rem;
 }
 
-.mt-2 {
-  margin-top: 1.5rem;
+.search-input {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #F0E8DD;
+  border-radius: 9999px;
+  padding: 1rem 1.5rem 1rem 3.5rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  outline: none;
+  transition: all 0.3s ease;
 }
 
-.mb-1 {
-  margin-bottom: 1rem;
+.search-input:focus {
+  border-color: #4B3621;
+  box-shadow: 0 4px 12px rgba(75, 54, 33, 0.08);
 }
 
-.flex-1 {
-  flex: 1;
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.category-chip {
+  padding: 0.6rem 1.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  border: 1px solid #F0E8DD;
+  background: #FFFFFF;
+  color: #4B3621;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.category-chip.active {
+  background: #4B3621;
+  color: #FFFFFF;
+  border-color: #4B3621;
+  box-shadow: 0 10px 20px rgba(75, 54, 33, 0.15);
+  transform: scale(1.05);
+}
+
+/* Wardrobe Header Components */
+.offline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F5EFE6;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #8C7B6B;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.vibe-banner {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 1.25rem;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
 .ui-card {
@@ -336,9 +468,7 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(243, 234, 226, 0.95);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--app-bg);
   border-bottom: 1px solid var(--border-light);
 }
 

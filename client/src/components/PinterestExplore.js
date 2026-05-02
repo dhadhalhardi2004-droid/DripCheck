@@ -32,59 +32,68 @@ export default function PinterestExplore() {
   ];
 
   return (
-    <div className="bg-[#FAF7F2] py-12 px-6 sm:px-12">
+    <div className="bg-[#FAF7F2] py-16 px-6 sm:px-12 relative overflow-hidden">
       
       {/* --- TOP FEATURE ROW --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24 max-w-[1400px] mx-auto">
         {topFeatures.map((item, idx) => (
           <div 
             key={idx} 
-            className="group flex items-center justify-between p-6 bg-gradient-to-br from-[#F5EFE6] to-[#FAF7F2] rounded-[32px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-500 cursor-pointer border border-white/40"
+            className="group flex items-center justify-between p-8 bg-[#F5EFE6]/60 rounded-[48px] shadow-sm hover-lift cursor-pointer border border-white/50"
           >
-            <div className="flex items-center gap-5">
-              <div className={`${item.color} w-12 h-12 rounded-full flex items-center justify-center shadow-lg`}>
+            <div className="flex items-center gap-6">
+              <div className={`${item.color} w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-110`}>
                 {item.icon}
               </div>
               <div>
-                <h3 className="text-[#2D241C] font-bold text-base leading-tight mb-0.5">{item.title}</h3>
-                <p className="text-[#8C7B6B] text-[13px] font-medium">{item.desc}</p>
+                <h3 className="text-[#2D241C] font-bold text-xl leading-tight mb-1">{item.title}</h3>
+                <p className="text-[#8C7B6B] text-sm font-medium">{item.desc}</p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-[#8C7B6B] group-hover:translate-x-1 transition-transform duration-300" />
+            <ChevronRight className="w-6 h-6 text-[#8C7B6B] group-hover:translate-x-2 transition-transform duration-300" />
           </div>
         ))}
       </div>
 
       {/* --- HEADING SECTION --- */}
-      <div className="mb-12 max-w-2xl">
-        <span className="text-[#BCAE99] text-[11px] font-black tracking-[0.2em] uppercase mb-3 block">Trending Now</span>
-        <h2 className="text-[#2D241C] text-4xl md:text-5xl font-serif font-bold leading-tight">
+      <div className="mb-14 max-w-[1400px] mx-auto">
+        <span className="text-[#BCAE99] text-[12px] font-black tracking-[0.25em] uppercase mb-4 block">Trending Now</span>
+        <h2 className="text-[#2D241C] text-5xl md:text-7xl font-serif font-bold leading-tight tracking-tight">
           Style ideas worth saving.
         </h2>
       </div>
 
       {/* --- STYLE CARDS ROW --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24 max-w-[1400px] mx-auto">
         {styleCards.map((card, idx) => (
           <div 
             key={idx} 
-            className="p-8 bg-white/60 backdrop-blur-sm rounded-[32px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-white/60 hover:bg-white transition-colors duration-500 group cursor-pointer"
+            className="p-10 bg-white rounded-[48px] shadow-sm hover-lift group cursor-pointer border border-[#F0E8DD]/50 flex flex-col justify-between min-h-[320px]"
           >
-            <div className="bg-[#F5EFE6] px-4 py-1.5 rounded-full inline-block mb-6 group-hover:bg-[#4B3621] group-hover:text-white transition-colors duration-500">
-              <span className="text-[#4B3621] text-[11px] font-bold uppercase tracking-wider group-hover:text-white">{card.category}</span>
+            <div>
+              <div className="bg-[#F5EFE6] px-5 py-2 rounded-full inline-block mb-8 group-hover:bg-[#4B3621] transition-colors duration-500">
+                <span className="text-[#4B3621] text-[11px] font-black uppercase tracking-widest group-hover:text-white">{card.category}</span>
+              </div>
+              <p className="text-[#2D241C] text-2xl font-serif font-bold leading-snug">
+                {card.desc}
+              </p>
             </div>
-            <p className="text-[#4B3621] text-lg font-medium leading-relaxed font-serif">
-              “{card.desc}”
-            </p>
           </div>
         ))}
       </div>
 
-      {/* --- FLOATING CHAT BUTTON --- */}
-      <div className="fixed bottom-10 right-10 z-[100]">
-        <button className="bg-[#4B3621] w-16 h-16 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(75,54,33,0.3)] hover:scale-110 active:scale-95 transition-all duration-300 group">
-          <MessageCircle className="w-7 h-7 text-white group-hover:rotate-12 transition-transform" />
-        </button>
+      {/* --- FLOATING CHAT BUTTON (Exact match to image) --- */}
+      <div className="fixed bottom-12 right-12 z-[100]">
+        <div className="relative group">
+          {/* Notification dot */}
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#D4B499] rounded-full border-2 border-[#FAF7F2] z-10 shadow-sm"></div>
+          
+          <button className="bg-[#4B3621] w-20 h-20 rounded-full flex items-center justify-center shadow-[0_12px_40px_rgba(75,54,33,0.3)] hover:scale-110 active:scale-95 transition-all duration-500 group">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        </div>
       </div>
 
     </div>

@@ -23,21 +23,48 @@ export default function Wardrobe() {
     <div className="page-wrapper animate-fade max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10">
       
       {/* --- HEADER SECTION --- */}
-      <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div>
-          <span className="text-[#BCAE99] text-[11px] font-black tracking-[0.2em] uppercase mb-3 block">Your Closet</span>
-          <h1 className="text-[#2D241C] text-5xl md:text-7xl font-serif font-bold leading-tight mb-2">Wardrobe</h1>
-          <p className="text-[#8C7B6B] text-base md:text-lg font-medium">
+      <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-1">
+          <span className="text-[#BCAE99] text-[10px] font-black tracking-[0.3em] uppercase block">Your Closet</span>
+          <h1 className="text-[#2D241C] text-7xl md:text-8xl font-serif font-bold leading-none tracking-tight">Wardrobe</h1>
+          <p className="text-[#8C7B6B] text-sm md:text-base font-medium opacity-80 pt-1">
             {filteredItems.length} pieces · ready to be remixed into infinite fits.
           </p>
+          
+          {/* Offline Badge */}
+          <div className="offline-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+              <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+              <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+              <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+              <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+              <line x1="12" y1="20" x2="12.01" y2="20"></line>
+            </svg>
+            Offline · showing your saved closet
+          </div>
         </div>
-        <button className="bg-[#4B3621] text-white px-8 py-3.5 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg text-sm font-bold">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+
+        <button className="bg-[#4B3621] text-white px-10 py-4 rounded-full flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl text-sm font-bold mt-4 md:mt-0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
           Add piece
         </button>
+      </div>
+
+      {/* AI Vibe Banner */}
+      <div className="vibe-banner animate-fade">
+        <div className="w-10 h-10 bg-[#FAF7F2] rounded-full flex items-center justify-center text-[#4B3621] shadow-inner flex-shrink-0">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+             <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707m0-12.728.707.707m11.314 11.314.707.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+           </svg>
+        </div>
+        <p className="text-[#4B3621] text-sm md:text-base font-medium font-serif italic">
+          your wardrobe is giving effortlessly chic, ready for anything from a coffee run to a cute dinner date. 💅✨
+        </p>
       </div>
 
       {/* Search & Filters */}

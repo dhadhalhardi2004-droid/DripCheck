@@ -3,12 +3,12 @@ import React from 'react';
 
 export default function ClothingCard({ item }) {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 mb-6 group cursor-pointer animate-fade">
+    <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover-lift mb-6 group cursor-pointer animate-fade">
       <div className="relative overflow-hidden">
         <img 
           src={item.image} 
           alt={item.name} 
-          className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute top-4 left-4">
           <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-neutral-800">

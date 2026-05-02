@@ -24,8 +24,8 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
       <header className="app-topbar">
         <div className="topbar-inner">
 
-          {/* Left — hamburger OR back arrow */}
-          {isHome ? (
+          {/* Left — hamburger AND back arrow (Wardrobe style) */}
+          <div className="flex items-center gap-2">
             <button
               className="topbar-icon-btn"
               onClick={() => setSidebarOpen(true)}
@@ -39,54 +39,41 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
-          ) : (
-            <button
-              className="topbar-icon-btn"
-              onClick={() => setActiveTab('home')}
-              aria-label="Back to home"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
-                strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6" />
+            {!isHome && (
+              <button
+                className="topbar-icon-btn"
+                onClick={() => setActiveTab('home')}
+                aria-label="Back to home"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+                  strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Center — logo (Always show logo in Wardrobe as per image) */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#4B3621] rounded-lg flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="white"></polygon>
               </svg>
-            </button>
-          )}
+            </div>
+            <span className="font-serif font-bold text-xl text-[#2D241C]">DripCheck</span>
+          </div>
 
-          {/* Center — title */}
-          <span className="topbar-title">
-            {isHome
-              ? <>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4B3621" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px', verticalAlign: 'middle', fill: '#4B3621'}}>
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                  </svg>
-                  <span className="topbar-brand-drip">Drip</span><span className="topbar-brand-check">Check</span>
-                </>
-              : title}
-          </span>
-
-          {/* Right — search & avatar */}
-          <div className="flex items-center gap-2">
+          {/* Right — Sparkles (Avatar button styled as sparkles) */}
+          <div className="flex items-center">
             <button
-              className="topbar-icon-btn"
-              onClick={() => setActiveTab('wardrobe')}
-              aria-label="Search clothes"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
-                strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="M21 21l-4.35-4.35"></path>
-              </svg>
-            </button>
-
-            <button
-              className="topbar-avatar-btn"
+              className="w-10 h-10 bg-[#EFE9E2] rounded-full flex items-center justify-center shadow-sm text-[#D4B499]"
               onClick={() => setActiveTab('profile')}
               aria-label="Go to profile"
-              style={{ backgroundColor: '#EFE9E2', color: '#E2A93A' }}
             >
-              ✨
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707m0-12.728.707.707m11.314 11.314.707.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+              </svg>
             </button>
           </div>
         </div>
