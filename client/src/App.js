@@ -88,7 +88,7 @@ export default function App() {
           {activeTab === "home" && (
             <Home setActiveTab={setActiveTab} user={user} />
           )}
-          {activeTab === "wardrobe" && <Wardrobe />}
+          {activeTab === "wardrobe" && <Wardrobe setActiveTab={setActiveTab} />}
           {activeTab === "add" && (
             <AddClothes setActiveTab={setActiveTab} />
           )}

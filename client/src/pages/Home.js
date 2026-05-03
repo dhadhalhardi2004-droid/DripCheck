@@ -4,6 +4,8 @@ import './Home.css';
 
 import PinterestExplore from '../components/PinterestExplore';
 import Footer from '../components/Footer';
+import DripAISuggestion from '../components/DripAISuggestion';
+import { Sparkles } from 'lucide-react';
 
 /* ── Icons ─────────────────────────────────────── */
 
@@ -49,6 +51,7 @@ const ChatBubble = () => (
 export default function Home({ setActiveTab, user }) {
   // Adding small state for heart toggle simulation
   const [liked, setLiked] = useState({});
+  const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
 
   const toggleLike = (id) => setLiked(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -89,16 +92,19 @@ export default function Home({ setActiveTab, user }) {
         </p>
         
         <div className="action-buttons">
-          <button className="btn-dark" onClick={() => {
-             document.getElementById('looks-section').scrollIntoView({ behavior: 'smooth' });
-          }}>
-            See today's looks <IconArrowRight />
+          <button className="btn-dark" onClick={() => setIsSuggestionOpen(true)}>
+            <Sparkles size={18} /> Get AI Suggestion
           </button>
           <button className="btn-light" onClick={() => setActiveTab('wardrobe')}>
             <IconTShirt /> My wardrobe
           </button>
         </div>
       </div>
+
+      <DripAISuggestion 
+        isOpen={isSuggestionOpen} 
+        onClose={() => setIsSuggestionOpen(false)} 
+      />
 
       {/* --- Large Outfit Cards Section (Summer) --- */}
       <div id="looks-section" className="section-header-row">

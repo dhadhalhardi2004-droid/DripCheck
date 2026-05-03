@@ -69,5 +69,19 @@ export const clothesData = [
     price: 72.50,
     category: "outerwear",
     image: "/images/winter_2.jpg"
+  },
+  {
+    id: 11,
+    name: "Nude Suede Pumps",
+    price: 145.00,
+    category: "shoes",
+    image: "https://i.pinimg.com/736x/80/7e/8e/807e8e66e9e4f55f65f0e9b97282c0b0.jpg"
+  },
+  {
+    id: 12,
+    name: "Cream Slingback Heels",
+    price: 125.00,
+    category: "shoes",
+    image: "https://i.pinimg.com/736x/2c/80/37/2c803738e41103030303030303030303.jpg"
   }
 ];
