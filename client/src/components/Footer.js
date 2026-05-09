@@ -5,7 +5,7 @@ import { Mail, Globe, ArrowUpRight } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-[#FAF7F2] pt-10 pb-20 px-6 sm:px-12">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="w-full">
         
         {/* --- MAIN FOOTER CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

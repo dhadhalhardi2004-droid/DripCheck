@@ -23,7 +23,7 @@ export default function Wardrobe({ setActiveTab }) {
   }, [searchTerm, activeCategory]);
 
   return (
-    <div className="page-wrapper animate-fade max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+    <div className="page-wrapper animate-fade w-full px-4 sm:px-6 lg:px-8 pt-10 pb-20">
       
       {/* --- HEADER SECTION --- */}
       <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">

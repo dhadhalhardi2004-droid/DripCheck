@@ -35,7 +35,7 @@ export default function PinterestExplore() {
     <div className="bg-[#FAF7F2] py-16 px-6 sm:px-12 relative overflow-hidden">
       
       {/* --- TOP FEATURE ROW --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24 max-w-[1400px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24 w-full">
         {topFeatures.map((item, idx) => (
           <div 
             key={idx} 
@@ -56,7 +56,7 @@ export default function PinterestExplore() {
       </div>
 
       {/* --- HEADING SECTION --- */}
-      <div className="mb-14 max-w-[1400px] mx-auto">
+      <div className="mb-14 w-full">
         <span className="text-[#BCAE99] text-[12px] font-black tracking-[0.25em] uppercase mb-4 block">Trending Now</span>
         <h2 className="text-[#2D241C] text-5xl md:text-7xl font-serif font-bold leading-tight tracking-tight">
           Style ideas worth saving.
@@ -64,7 +64,7 @@ export default function PinterestExplore() {
       </div>
 
       {/* --- STYLE CARDS ROW --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24 max-w-[1400px] mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24 w-full">
         {styleCards.map((card, idx) => (
           <div 
             key={idx} 

@@ -88,7 +88,7 @@ export default function AddClothes({ setActiveTab }) {
   };
 
   return (
-    <div className="page-wrapper animate-fade max-w-6xl mx-auto px-6 py-12 lg:py-20">
+    <div className="page-wrapper animate-fade w-full px-6 py-12 lg:py-20">
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
         <div>
